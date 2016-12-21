@@ -1,0 +1,19 @@
+car:
+  build: .
+  volumes:
+    - .:/work/
+    - nvidia_driver_367.57:/usr/local/nvidia:ro
+  environment:
+    JOBLIB_TEMP_FOLDER: /tmp
+  devices:
+  - /dev/nvidia0
+  - /dev/nvidiactl
+  - /dev/nvidia-uvm
+train:
+  extends: car
+  command: /root/anaconda3/envs/venv/bin/python model.py
+drive:
+  extends: car
+  ports:
+    - "4567:4567"
+  command: /root/anaconda3/envs/venv/bin/python drive.py model.json
