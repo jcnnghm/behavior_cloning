@@ -17,3 +17,10 @@ drive:
   ports:
     - "4567:4567"
   command: /root/anaconda3/envs/venv/bin/python drive.py model.json
+drive_cpu:
+  build: .
+  volumes:
+    - .:/work/
+  ports:
+    - "4567:4567"
+  command: /root/anaconda3/envs/venv/bin/python drive.py model.json
