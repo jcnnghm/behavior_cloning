@@ -1,0 +1,27 @@
+AXIS:
+
+Left:
+
+Vertical - 1 - Up (-1), Down (1)
+Horizontal - 0 - Left (-1), Right (1)
+
+Right:
+
+Vertical - 4 - Up (-1), Down (1)
+Horizontal - 3 - Left (-1), Right (1)
+
+Trigger:
+
+Left - 2 - -1 to 1
+Right - 5 - -1 to 1
+
+Buttons:
+
+A - 0
+X - 2
+B - 1
+Y - 3
+START - 7
+BACK - 6
+LB  - 4
+RB - 5
