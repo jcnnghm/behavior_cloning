@@ -191,9 +191,7 @@ class Model(object):
 
 if __name__ == '__main__':
     model = Model()
-    # model.train('hard_data/driving_log.csv', epochs=5, train_name='hard')
-    model.train('gold_data/driving_log.csv', epochs=5, train_name='main')
     model.train('hard_data/driving_log.csv', epochs=5, train_name='hard')
-    model.train('udacity_data/driving_log.csv', epochs=10, train_name='udacity')
+    model.train('gold_data/driving_log.csv', epochs=5, train_name='main')
     model.evaluate()
     model.save()
