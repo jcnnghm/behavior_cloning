@@ -25,34 +25,57 @@ prev_image_array = None
 
 
 class ManualControl(object):
+    """Helper class that makes it easy to collect input from an xbox controller
+    """
     def __init__(self):
+        """Intializes an xbox 360 joystick, as the first connected joystick."""
         pygame.init()
         self.joystick = pygame.joystick.Joystick(0)
         self.joystick.init()
 
     def get_events(self):
+        """Yields all incoming control events.  Processing events is
+        neccessary to so the get_* joystick calls return correct values.  One
+        of process_events or get_events must be called in each control loop.
+        """
         for event in pygame.event.get():
             yield event
 
     def process_events(self):
+        """Ignores all incoming control events.  Getting events is
+        neccessary to so the get_* joystick calls return correct values.  One
+        of process_events or get_events must be called in each control loop.
+        """
         for event in self.get_events():
             pass
 
     def get_throttle(self):
-        # Full throttle when holding x
+        """Returns throttle from 0.0 to 0.2 using the right trigger on the
+        xbox controller.  If the X button is held, full throttle is applied.
+        This is useful for accelerating more quickly and speeding through easy
+        areas, and slowing down in harder areas while training.
+        """
         if self.joystick.get_button(2):
             return 1.0
 
         return ((self.joystick.get_axis(5) + 1.0) / 2.0) / 5.0
 
     def get_angle(self):
+        """Steering angle is from the horizontal movement of the left
+        joystick of the xbox controller.  This returns values from -0.5 to
+        0.5 instead of -1 to 1 to prevent excessive oversteering.
+        """
         return self.joystick.get_axis(0) / 2.0
 
     def is_manual_control(self):
+        """Detects holding the A button on the xbox controller."""
         return self.joystick.get_button(0)
 
+# Control interface
 control = ManualControl()
+# Images collected for training
 train_images = []
+# Steering labels collected for training
 train_labels = []
 
 
@@ -72,15 +95,20 @@ def telemetry(sid, data):
     transformed_image_array = image_array[None, :, :, :]
 
     for event in control.get_events():
+        # Hitting the B button will save a new copy of the model weights
         if event.type == pygame.JOYBUTTONUP and event.button == 1:
             print("Saving fine-tuned model")
             model.save_weights('model.h5')
 
+    # The throttle can be overridden even during automatic control.
     throttle = control.get_throttle()
     if throttle == 0.0:
         throttle = 0.2
 
     if control.is_manual_control():
+        # When under manual control, collect the steering angle from the
+        # controller, and save the image and angle, and a horizontally flipped
+        # version to train on.
         steering_angle = control.get_angle()
 
         train_images.append(image_array)
@@ -97,6 +125,10 @@ def telemetry(sid, data):
     send_control(steering_angle, throttle)
 
     if len(train_images) >= 64:
+        """Every 32 training images (flipped and normal), train the model on the
+        batch and reset the batch.  Predictions immediately incorporate the
+        new training.
+        """
         print("Training on image batch")
         model.train_on_batch(np.asarray(train_images), np.asarray(train_labels))
         train_images[:] = []
