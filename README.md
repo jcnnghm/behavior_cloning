@@ -1,5 +1,7 @@
 # behavior_cloning
 
+A video of the trained model behavior is available at https://www.youtube.com/watch?v=wadaYqsq4Kw.
+
 ## Model
 
 ### Solution Design
